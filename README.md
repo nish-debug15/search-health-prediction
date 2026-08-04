@@ -1,59 +1,67 @@
-# Search Health Prediction for Search Discoverability
+# Predictive Modeling of Search Engine Visibility Decay: A Machine Learning Approach for Proactive SEO
 
-A machine learning research project exploring whether historical search signals can predict the future health of web pages and generate ranked, actionable recommendations.
+A machine learning capstone project exploring whether historical search signals can predict the future health of web pages and generate ranked, actionable recommendations.
 
-## Research Question
+**Status:** Completed ✅  
+**Champion Model:** Random Forest (`n_estimators=100`, `max_depth=10`, `class_weight='balanced'`)  
+**Primary Metric (Macro F1):** 0.4871 (outperforming the Momentum Heuristic baseline of 0.4399)
 
-Can historical search signals be used to predict whether a page is likely to grow, remain stable, or decline over a future time window?
+---
 
-## Objectives
+## 📖 Research Paper
+The full technical methodology, data pipeline, and failure analysis have been compiled into a professional academic publication.
+* View the source text: [`research_paper.md`](research_paper.md)
+* View the formatted HTML publication: [`docs/index.html`](docs/index.html) *(Optimized for GitHub Pages)*
 
+---
+
+## 🎯 Objectives
 - Explore and understand the FlyRank Search Intelligence dataset.
-- Engineer predictive search-performance features.
-- Build a leakage-free machine learning pipeline.
-- Compare a baseline with tree-based models.
-- Explain predictions using model interpretability techniques.
-- Rank pages by predicted future health and recommend actions.
+- Engineer predictive, leakage-free search-performance features over a 30-day rolling window.
+- Build a robust machine learning pipeline strictly partitioned by time (no random splits).
+- Evaluate candidate models against a naive majority class and a rule-based momentum baseline.
+- Interpret predictions using SHAP (SHapley Additive exPlanations).
+- Construct a deterministic Recommendation Engine to map model probabilities to actionable SEO interventions (e.g., Investigate, Refresh, Prune).
 
-## Project Status
+---
 
-🚧 In Progress
-
-## Repository Structure
+## 📂 Final Repository Structure
 
 ```text
 .
-├── work/
-│   ├── notebooks/
-│   └── capstone.ipynb
-│
-├── data/
-│
-├── submission/
-│   └── paper_url.txt
-│
+├── data/                            # Processed parquet dataset files
+├── docs/                            # HTML documentation and academic paper build
+│   ├── assets/                      # Generated analytical charts (PNGs)
+│   └── index.html                   # Professional Anthropic-style editorial UI
+├── work/                            # Python execution scripts
+│   ├── 01_raw_data_extraction.py
+│   ├── 02_cleaning.py
+│   ├── 03_imputation.py
+│   ├── ...
+│   ├── 11_generate_charts.py
+│   ├── champion_model.joblib        # Serialized Champion Random Forest
+│   └── champion_features.txt        # Feature list
+├── build_docs.py                    # Script to compile markdown & LaTeX to HTML
+├── research_paper.md                # Final written report
 ├── requirements.txt
 └── README.md
 ```
 
-## Tech Stack
+---
 
-- Python
-- DuckDB
-- Pandas
-- NumPy
-- Scikit-learn
-- XGBoost
-- SHAP
-- Matplotlib
-- Jupyter Notebook
+## 🛠️ Tech Stack
+- **Data Engineering:** DuckDB, Pandas, NumPy, PyArrow (Parquet)
+- **Machine Learning:** Scikit-learn, XGBoost
+- **Interpretability:** SHAP
+- **Visualization:** Matplotlib, Seaborn
+- **Documentation Build:** Python Markdown, MathJax (KaTeX)
 
-## Dataset
+---
 
-Built on the FlyRank ML Internship Search Intelligence dataset.
+## 📊 Dataset
+Built on the **FlyRank ML Internship Search Intelligence** dataset (approx. 93.4M raw warehouse rows, 548,528 qualified modeling instances).
 
-> Public repository excludes any client-identifiable information, domains, URLs, raw queries, credentials, or private exports.
+> **Disclaimer:** This public repository exclusively contains normalized, anonymized features. It explicitly excludes all client-identifiable information, domains, URLs, raw queries, credentials, and private exports.
 
-## License
-
-For educational and research purposes.
+## 📄 License
+Created for educational and research purposes during the FlyRank ML Internship (August 2026).
