@@ -1,0 +1,3 @@
+# Confusion Matrices (Test Set)
+
+### Rule-Based Momentum Baseline\n```text\n              Predicted ->\nTrue Class    Declining | Growing | Stable\nDeclining   |     58812 |   27820 |  10478\nGrowing     |     11732 |   22163 |   4427\nStable      |     13743 |   12886 |   6314\n```\n\n### XGBoost\n```text\n              Predicted ->\nTrue Class    Declining | Growing | Stable\nDeclining   |     54599 |   33037 |   9474\nGrowing     |      9315 |   25183 |   3824\nStable      |     11231 |   13875 |   7837\n```\n\n### RandomForest (Champion)\n```text\n              Predicted ->\nTrue Class    Declining | Growing | Stable\nDeclining   |     53284 |   15675 |  28151\nGrowing     |     10008 |   17341 |  10973\nStable      |      9396 |    6268 |  17279\n```\n\n

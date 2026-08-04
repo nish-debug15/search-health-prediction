@@ -17,9 +17,10 @@
 
 | Model | Macro F1-Score | Status |
 | :--- | :---: | :--- |
+| **Majority-Class Baseline** | 0.1236 | Predicts "growing" |
 | **Rule-Based Baseline** | 0.4399 | Heuristic (momentum-based) |
-| **RandomForest** | 0.4871 | (`n_estimators=100`, `max_depth=10`, `class_weight='balanced'`) |
-| **XGBoost (Champion)** | **0.4589** | Selected via early stopping on Validation |
+| **XGBoost** | 0.4600 | Selected via early stopping on Validation |
+| **RandomForest (Champion)** | **0.4871** | (`n_estimators=100`, `max_depth=10`, `class_weight='balanced'`) |
 
 **Conclusion:**
-The **RandomForest** model achieved a Macro F1 of **0.4871**, successfully beating the baseline (0.4399). It has been saved as the champion model (`work/champion_model.*`) and will be used for interpretability (SHAP) in Block 8 and the ranking engine in Block 9.
+The Random Forest consistently outperformed the rule-based heuristic on the held-out out-of-time test set. It has been saved as the champion model (`work/champion_model.joblib`) and will be used for interpretability (SHAP) in Block 8 and the ranking engine in Block 9. See `07_confusion_matrices.md` for error analysis details.
