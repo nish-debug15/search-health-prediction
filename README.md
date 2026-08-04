@@ -1,25 +1,21 @@
 # Predictive Modeling of Search Engine Visibility Decay: A Machine Learning Approach for Proactive SEO
 
-**Nishit Patel**  
-*Machine Learning Capstone*  
-*FlyRank ML Internship • August 2026*
-
 A machine learning capstone project exploring whether historical search signals can predict the future health of web pages and generate ranked, actionable recommendations.
 
-**Status:** Completed ✅  
+**Status:** Completed  
 **Champion Model:** Random Forest (`n_estimators=100`, `max_depth=10`, `class_weight='balanced'`)  
 **Primary Metric (Macro F1):** 0.4871 (outperforming the Momentum Heuristic baseline of 0.4399)
 
 ---
 
-## 📖 Research Paper
+## Research Paper
 The full technical methodology, data pipeline, and failure analysis have been compiled into a professional academic publication.
 * View the source text: [`research_paper.md`](research_paper.md)
 * View the formatted HTML publication: [`docs/index.html`](docs/index.html) *(Optimized for GitHub Pages)*
 
 ---
 
-## 🎯 Objectives
+## Objectives
 - Explore and understand the FlyRank Search Intelligence dataset.
 - Engineer predictive, leakage-free search-performance features over a 30-day rolling window.
 - Build a robust machine learning pipeline strictly partitioned by time (no random splits).
@@ -29,7 +25,7 @@ The full technical methodology, data pipeline, and failure analysis have been co
 
 ---
 
-## 📂 Final Repository Structure
+## Final Repository Structure
 
 ```text
 .
@@ -53,7 +49,7 @@ The full technical methodology, data pipeline, and failure analysis have been co
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Data Engineering:** DuckDB, Pandas, NumPy, PyArrow (Parquet)
 - **Machine Learning:** Scikit-learn, XGBoost
 - **Interpretability:** SHAP
@@ -62,10 +58,10 @@ The full technical methodology, data pipeline, and failure analysis have been co
 
 ---
 
-## 📊 Dataset
+## Dataset
 Built on the **FlyRank ML Internship Search Intelligence** dataset (approx. 93.4M raw warehouse rows, 548,528 qualified modeling instances).
 
 > **Disclaimer:** This public repository exclusively contains normalized, anonymized features. It explicitly excludes all client-identifiable information, domains, URLs, raw queries, credentials, and private exports.
 
-## 📄 License
+## License
 Created for educational and research purposes during the FlyRank ML Internship (August 2026).
