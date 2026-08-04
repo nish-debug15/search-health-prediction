@@ -19,10 +19,21 @@ html_content = markdown.markdown(md_text, extensions=['tables', 'fenced_code', '
 # We want to replace the standard <h1> with our custom Hero section
 hero_html = """
 <header class="hero">
-    <h1>Predictive Modeling of Search Engine Visibility Decay: A Machine Learning Approach for Proactive SEO</h1>
-    <p class="subtitle">A Time-Aware Machine Learning Study on the FlyRank Search Intelligence Dataset</p>
-    <div class="meta">
-        <span class="author">Antigravity</span> &bull; <time datetime="2026-08-04">August 4, 2026</time>
+    <h1>Predictive Modeling of Search Engine Visibility Decay:<br>A Machine Learning Approach for Proactive SEO</h1>
+    
+    <div class="author-block">
+        <div class="author-name">Nishit Patel</div>
+        <div class="author-details">Machine Learning Research Project</div>
+        <div class="author-details">FlyRank ML Internship &bull; August 2026</div>
+        <div class="author-links">
+            <a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub</a> | <a href="#" target="_blank">LinkedIn</a>
+        </div>
+    </div>
+    
+    <div class="metadata-row">
+        <div class="meta-item"><strong>Dataset:</strong> FlyRank Internship Warehouse</div>
+        <div class="meta-item"><strong>Model:</strong> Random Forest</div>
+        <div class="meta-item"><strong>Primary Metric:</strong> Macro F1 = 0.4871</div>
     </div>
 </header>
 """
@@ -160,42 +171,65 @@ html_template = f"""<!DOCTYPE html>
 
         /* Hero Section */
         .hero {{
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
         }}
 
         .hero h1 {{
-            font-size: 2.25rem;
+            font-size: 1.85rem; /* Reduced size */
             margin-top: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
         }}
 
-        .hero .subtitle {{
-            font-size: 1.25rem;
-            color: var(--text-secondary);
+        .author-block {{
             margin-bottom: 1.5rem;
         }}
-
-        .hero .meta {{
+        
+        .author-name {{
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }}
+        
+        .author-details {{
             font-size: 0.95rem;
             color: var(--text-secondary);
         }}
+        
+        .author-links {{
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }}
 
-        .hero .meta .author {{
+        .metadata-row {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: var(--surface);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }}
+
+        .meta-item strong {{
             color: var(--text-primary);
-            font-weight: 500;
+            margin-right: 0.25rem;
         }}
 
         /* Links */
-        .main-content a {{
+        a {{
             color: var(--accent);
             text-decoration: none;
         }}
         
-        .main-content a:hover {{
+        a:hover {{
             text-decoration: underline;
         }}
 
@@ -258,6 +292,29 @@ html_template = f"""<!DOCTYPE html>
             margin-bottom: 0.5rem;
         }}
 
+        /* Images / Figures */
+        img {{
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            background-color: #ffffff; /* White background for charts */
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            display: block;
+            margin: 2rem auto;
+            border: 1px solid var(--border-color);
+        }}
+        
+        /* Image alt text used as caption if necessary */
+        img + em {{
+            display: block;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: -1rem;
+            margin-bottom: 2rem;
+        }}
+
         /* Math Equations */
         .math {{
             display: block;
@@ -275,9 +332,10 @@ html_template = f"""<!DOCTYPE html>
             border-top: 1px solid var(--border-color);
             font-size: 0.85rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 0.5rem;
             color: var(--text-secondary);
+            text-align: center;
         }}
         
         footer a {{
@@ -302,12 +360,9 @@ html_template = f"""<!DOCTYPE html>
             {html_content}
 
             <footer>
-                <div>
-                    &copy; 2026 Antigravity. Built on the <a href="https://flyrank.ai" target="_blank">FlyRank ML Internship Dataset</a>.
-                </div>
-                <div>
-                    <a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub Repository</a>
-                </div>
+                <div>Built and authored by Nishit Patel</div>
+                <div>Built on the <a href="https://flyrank.ai" target="_blank">FlyRank ML Internship Dataset</a></div>
+                <div><a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub Repository</a></div>
             </footer>
         </main>
     </div>
@@ -385,6 +440,16 @@ html_template = f"""<!DOCTYPE html>
             }}, {{ rootMargin: "-10% 0px -80% 0px" }});
 
             headingElements.forEach(heading => observer.observe(heading));
+            
+            // Extract alt text from images to use as captions
+            const images = document.querySelectorAll('.main-content img');
+            images.forEach(img => {{
+                if (img.alt) {{
+                    const caption = document.createElement('em');
+                    caption.textContent = img.alt;
+                    img.parentNode.insertBefore(caption, img.nextSibling);
+                }}
+            }});
         }});
     </script>
 </body>
@@ -395,4 +460,4 @@ os.makedirs('docs', exist_ok=True)
 with open('docs/index.html', 'w', encoding='utf-8') as f:
     f.write(html_template)
 
-print("Generated professional academic docs/index.html")
+print("Generated professional academic docs/index.html with charts")

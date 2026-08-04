@@ -36,6 +36,8 @@ $$\Delta\% = \frac{\text{Impressions}_{pred} - \text{Impressions}_{feat}}{\text{
 * **Stable:** $-20\% \le \Delta\% \le +20\%$
 * **Declining:** $\Delta\% < -20\%$
 
+![Training Label Distribution (Feb & Mar 2026)](assets/label_distribution.png)
+
 The feature window required $\ge 10$ impressions to ensure the percentage change denominator is not near zero and that the observed traffic changes are statistically meaningful.
 
 ## 8. Validation Strategy
@@ -63,6 +65,10 @@ Two candidate models (RandomForest, XGBoost) were trained on the identical featu
 
 The Random Forest achieved the highest Macro F1 score among the evaluated models.
 
+![Model Performance Comparison (Test Set Macro F1)](assets/model_comparison.png)
+
+![Confusion Matrix: Champion Random Forest (Test Set)](assets/confusion_matrix.png)
+
 ## 11. Explainability (SHAP)
 To interpret the trained model's predictions, SHAP (SHapley Additive exPlanations) was applied to the Champion Random Forest model.
 
@@ -70,6 +76,10 @@ The SHAP analysis indicates that the trained model primarily relies on three cor
 1. **Recent Momentum (`imp_momentum`)**
 2. **Historical Volume (`feat_impressions`)**
 3. **Content Age (`content_age_days`)**
+
+![SHAP Global Feature Importance](assets/shap_global_importance.png)
+
+![SHAP Summary for Declining Predictions](assets/shap_declining.png)
 
 These learned patterns are broadly consistent with common SEO intuition: older content generally contributed toward declining predictions, whereas newer content with explosive recent momentum contributed toward growing predictions.
 

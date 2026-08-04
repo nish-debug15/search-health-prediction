@@ -128,42 +128,65 @@
 
         /* Hero Section */
         .hero {
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
         }
 
         .hero h1 {
-            font-size: 2.25rem;
+            font-size: 1.85rem; /* Reduced size */
             margin-top: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
         }
 
-        .hero .subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
+        .author-block {
             margin-bottom: 1.5rem;
         }
-
-        .hero .meta {
+        
+        .author-name {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .author-details {
             font-size: 0.95rem;
             color: var(--text-secondary);
         }
+        
+        .author-links {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
 
-        .hero .meta .author {
+        .metadata-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: var(--surface);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .meta-item strong {
             color: var(--text-primary);
-            font-weight: 500;
+            margin-right: 0.25rem;
         }
 
         /* Links */
-        .main-content a {
+        a {
             color: var(--accent);
             text-decoration: none;
         }
         
-        .main-content a:hover {
+        a:hover {
             text-decoration: underline;
         }
 
@@ -226,6 +249,29 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Images / Figures */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            background-color: #ffffff; /* White background for charts */
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            display: block;
+            margin: 2rem auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Image alt text used as caption if necessary */
+        img + em {
+            display: block;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: -1rem;
+            margin-bottom: 2rem;
+        }
+
         /* Math Equations */
         .math {
             display: block;
@@ -243,9 +289,10 @@
             border-top: 1px solid var(--border-color);
             font-size: 0.85rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 0.5rem;
             color: var(--text-secondary);
+            text-align: center;
         }
         
         footer a {
@@ -296,6 +343,7 @@ $$\Delta\% = \frac{\text{Impressions}<em>{pred} - \text{Impressions}</em>{feat}}
 * <strong>Growing:</strong> $\Delta\% &gt; +20\%$
 * <strong>Stable:</strong> $-20\% \le \Delta\% \le +20\%$
 * <strong>Declining:</strong> $\Delta\% &lt; -20\%$</p>
+<p><img alt="Training Label Distribution (Feb &amp; Mar 2026)" src="assets/label_distribution.png" /></p>
 <p>The feature window required $\ge 10$ impressions to ensure the percentage change denominator is not near zero and that the observed traffic changes are statistically meaningful.</p>
 <h2 id="8-validation-strategy">8. Validation Strategy</h2>
 <p>We implemented a strict out-of-time (OOT) validation strategy to simulate a real-world production environment and prevent temporal data leakage:
@@ -341,12 +389,16 @@ $$\Delta\% = \frac{\text{Impressions}<em>{pred} - \text{Impressions}</em>{feat}}
 </tbody>
 </table>
 <p>The Random Forest achieved the highest Macro F1 score among the evaluated models.</p>
+<p><img alt="Model Performance Comparison (Test Set Macro F1)" src="assets/model_comparison.png" /></p>
+<p><img alt="Confusion Matrix: Champion Random Forest (Test Set)" src="assets/confusion_matrix.png" /></p>
 <h2 id="11-explainability-shap">11. Explainability (SHAP)</h2>
 <p>To interpret the trained model's predictions, SHAP (SHapley Additive exPlanations) was applied to the Champion Random Forest model.</p>
 <p>The SHAP analysis indicates that the trained model primarily relies on three core factors:
 1. <strong>Recent Momentum (<code>imp_momentum</code>)</strong>
 2. <strong>Historical Volume (<code>feat_impressions</code>)</strong>
 3. <strong>Content Age (<code>content_age_days</code>)</strong></p>
+<p><img alt="SHAP Global Feature Importance" src="assets/shap_global_importance.png" /></p>
+<p><img alt="SHAP Summary for Declining Predictions" src="assets/shap_declining.png" /></p>
 <p>These learned patterns are broadly consistent with common SEO intuition: older content generally contributed toward declining predictions, whereas newer content with explosive recent momentum contributed toward growing predictions.</p>
 <h2 id="12-recommendation-engine">12. Recommendation Engine</h2>
 <p>To translate probabilistic predictions into actionable business strategy, we deployed a deterministic Recommendation Engine over the May 2026 snapshot. The engine maps the predicted status and business context to specific SEO interventions using the following explicit logic:</p>
@@ -421,12 +473,9 @@ content_bdf60c86117079be        declining                0.591222           9540
 <p>Built on the FlyRank ML Internship dataset provided by FlyRank. This work uses the FlyRank internship warehouse dataset for educational and research purposes. More information: https://flyrank.ai</p>
 
             <footer>
-                <div>
-                    &copy; 2026 Antigravity. Built on the <a href="https://flyrank.ai" target="_blank">FlyRank ML Internship Dataset</a>.
-                </div>
-                <div>
-                    <a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub Repository</a>
-                </div>
+                <div>Built and authored by Nishit Patel</div>
+                <div>Built on the <a href="https://flyrank.ai" target="_blank">FlyRank ML Internship Dataset</a></div>
+                <div><a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub Repository</a></div>
             </footer>
         </main>
     </div>
@@ -504,6 +553,16 @@ content_bdf60c86117079be        declining                0.591222           9540
             }, { rootMargin: "-10% 0px -80% 0px" });
 
             headingElements.forEach(heading => observer.observe(heading));
+            
+            // Extract alt text from images to use as captions
+            const images = document.querySelectorAll('.main-content img');
+            images.forEach(img => {
+                if (img.alt) {
+                    const caption = document.createElement('em');
+                    caption.textContent = img.alt;
+                    img.parentNode.insertBefore(caption, img.nextSibling);
+                }
+            });
         });
     </script>
 </body>
