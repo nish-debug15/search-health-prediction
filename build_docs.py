@@ -9,12 +9,19 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "markdown"])
     import markdown
 
+try:
+    import mdx_math
+except ImportError:
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "python-markdown-math"])
+    import mdx_math
+
 # Read the markdown
 with open('research_paper.md', 'r', encoding='utf-8') as f:
     md_text = f.read()
 
-# Convert to HTML
-html_content = markdown.markdown(md_text, extensions=['tables', 'fenced_code', 'toc'])
+# Convert to HTML (mdx_math ensures math equations are escaped from markdown parsing)
+html_content = markdown.markdown(md_text, extensions=['tables', 'fenced_code', 'toc', 'mdx_math'])
 
 # We want to replace the standard <h1> with our custom Hero section
 hero_html = """
@@ -50,6 +57,23 @@ html_template = f"""<!DOCTYPE html>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration -->
+    <script>
+      MathJax = {{
+        tex: {{
+          inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+          displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
+        }},
+        svg: {{
+          fontCache: 'global'
+        }}
+      }};
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+
     <style>
         :root {{
             --bg-color: #0f172a;
@@ -177,7 +201,7 @@ html_template = f"""<!DOCTYPE html>
         }}
 
         .hero h1 {{
-            font-size: 1.85rem; /* Reduced size */
+            font-size: 1.85rem;
             margin-top: 0;
             margin-bottom: 1.5rem;
             font-weight: 700;
@@ -297,7 +321,7 @@ html_template = f"""<!DOCTYPE html>
             max-width: 100%;
             height: auto;
             border-radius: 6px;
-            background-color: #ffffff; /* White background for charts */
+            background-color: #ffffff;
             padding: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
             display: block;
@@ -305,7 +329,6 @@ html_template = f"""<!DOCTYPE html>
             border: 1px solid var(--border-color);
         }}
         
-        /* Image alt text used as caption if necessary */
         img + em {{
             display: block;
             text-align: center;
@@ -315,16 +338,6 @@ html_template = f"""<!DOCTYPE html>
             margin-bottom: 2rem;
         }}
 
-        /* Math Equations */
-        .math {{
-            display: block;
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            margin: 1.5rem 0;
-            padding: 1rem;
-            color: var(--text-primary);
-        }}
-        
         /* Footer */
         footer {{
             margin-top: 5rem;
@@ -344,6 +357,13 @@ html_template = f"""<!DOCTYPE html>
         
         footer a:hover {{
             color: var(--accent);
+        }}
+        
+        /* Math display block adjustments */
+        .MathJax_Display {{
+            margin: 2em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
         }}
     </style>
 </head>
@@ -369,36 +389,6 @@ html_template = f"""<!DOCTYPE html>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {{
-            // Format Math formulas
-            const ps = document.querySelectorAll('.main-content p');
-            ps.forEach(p => {{
-                if (p.textContent.trim().startsWith('$$') && p.textContent.trim().endsWith('$$')) {{
-                    p.classList.add('math');
-                    p.innerHTML = p.innerHTML.replace(/\$\$/g, '');
-                }} else if (p.textContent.includes('$\le$')) {{
-                    p.innerHTML = p.innerHTML.replace(/\$\\le\$/g, '≤');
-                }} else if (p.textContent.includes('$\ge$')) {{
-                    p.innerHTML = p.innerHTML.replace(/\$\\ge\$/g, '≥');
-                }}
-            }});
-            
-            const tds = document.querySelectorAll('td');
-            tds.forEach(td => {{
-                if (td.innerHTML.includes('$\\le$')) {{
-                    td.innerHTML = td.innerHTML.replace(/\$\\le\$/g, '≤');
-                }}
-                if (td.innerHTML.includes('$\\ge$')) {{
-                    td.innerHTML = td.innerHTML.replace(/\$\\ge\$/g, '≥');
-                }}
-            }});
-            
-            const lis = document.querySelectorAll('li');
-            lis.forEach(li => {{
-                if (li.innerHTML.includes('$\\ge$')) {{
-                    li.innerHTML = li.innerHTML.replace(/\$\\ge\$/g, '≥');
-                }}
-            }});
-
             // Build TOC
             const headings = document.querySelectorAll('.main-content h2');
             const toc = document.getElementById('toc');
@@ -460,4 +450,4 @@ os.makedirs('docs', exist_ok=True)
 with open('docs/index.html', 'w', encoding='utf-8') as f:
     f.write(html_template)
 
-print("Generated professional academic docs/index.html with charts")
+print("Generated professional academic docs/index.html with MathJax")

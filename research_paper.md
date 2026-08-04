@@ -11,17 +11,20 @@ The primary objective is to classify a web page's future 30-day traffic trajecto
 
 ## 4. Dataset
 We utilized the public `FlyRank/internship-warehouse` dataset, which contains high-resolution daily performance records (Google Search Console, Google Analytics 4) and static content dimensions for thousands of URLs structured in a five-table star schema. 
+
 * **Data Scale:** The raw dataset contains 78.8 million fact rows and a total of ~93.4 million warehouse rows.
 * **Qualified Instances:** After rigorously applying an activity filter (requiring $\ge 10$ impressions in the feature window) and ensuring valid join integrity, we extracted a clean modeling dataset of **548,528 valid instances**.
 
 ## 5. Methodology
 To prevent look-ahead bias, we established strict, rolling observation windows:
+
 * **Feature Window ($T_{feat}$):** 30 days of historical data used to engineer predictive features.
 * **Prediction Window ($T_{pred}$):** The subsequent 30 days used exclusively to compute the target label.
 This structural isolation guarantees that no future information leaks into the training matrix.
 
 ## 6. Feature Engineering
 We engineered a matrix of 17 leakage-free features per instance, categorized as follows:
+
 * **Traffic Aggregates:** Total impressions, clicks, average position, and zero-impression days over $T_{feat}$.
 * **Derived Engagement:** GA4 sessions, pageviews, and Click-Through Rate (CTR).
 * **Momentum Ratios:** Growth velocity comparing the second half of the feature window against the first half (`imp_momentum`, `clicks_momentum`).
@@ -32,6 +35,7 @@ Every feature was verified to use only information available inside the feature 
 ## 7. Label Definition
 The target variable is a multiclass label defined by the relative percentage change in impressions between the Prediction Window and the Feature Window:
 $$\Delta\% = \frac{\text{Impressions}_{pred} - \text{Impressions}_{feat}}{\text{Impressions}_{feat}}$$
+
 * **Growing:** $\Delta\% > +20\%$
 * **Stable:** $-20\% \le \Delta\% \le +20\%$
 * **Declining:** $\Delta\% < -20\%$
@@ -42,6 +46,7 @@ The feature window required $\ge 10$ impressions to ensure the percentage change
 
 ## 8. Validation Strategy
 We implemented a strict out-of-time (OOT) validation strategy to simulate a real-world production environment and prevent temporal data leakage:
+
 * **Train:** `train_1` (Feb 2026 Cutoff) + `train_2` (Mar 2026 Cutoff) — 228,905 instances
 * **Validation:** `val` (Apr 2026 Cutoff) — 151,248 instances
 * **Test (OOT):** `test` (May 2026 Cutoff) — 168,375 instances
@@ -50,6 +55,7 @@ The primary evaluation metric selected was **Macro F1-Score** to account for sig
 
 ## 9. Baseline
 We established two naive baselines:
+
 1. **Majority Class Predictor:** Predicting the most frequent class in the training set ("growing"). Test Set Macro F1: 0.1236.
 2. **Momentum Heuristic:** A rule-based approach predicting that the traffic direction observed in the final 15 days of the feature window will continue into the prediction window. Test Set Macro F1: 0.4399.
 
@@ -73,6 +79,7 @@ The Random Forest achieved the highest Macro F1 score among the evaluated models
 To interpret the trained model's predictions, SHAP (SHapley Additive exPlanations) was applied to the Champion Random Forest model.
 
 The SHAP analysis indicates that the trained model primarily relies on three core factors:
+
 1. **Recent Momentum (`imp_momentum`)**
 2. **Historical Volume (`feat_impressions`)**
 3. **Content Age (`content_age_days`)**
@@ -114,12 +121,14 @@ content_bdf60c86117079be        declining                0.591222           9540
 
 ## 14. Failure Analysis
 An extensive error analysis on the test set (Overall Error Rate: 47.8%) revealed three primary failure profiles:
+
 1. **The "False Growth" Trap:** Transient traffic spikes in the feature window cause the model to over-predict sustained growth, failing to anticipate rapid regression to the mean.
 2. **The "Stability" Illusion:** The inherent daily volatility of short-term search performance fluctuations makes the $\pm 20\%$ stability band notoriously difficult to hit; the model tends to over-predict directional movement (Growth/Decline) instead.
 3. **Macro-Level Distribution Shift:** The model was trained on earlier temporal windows with a higher proportion of growing pages and evaluated on a later out-of-time window with substantially more declining pages.
 
 ## 15. Limitations
 When evaluating this system for production, the following limitations must be explicitly acknowledged:
+
 * **Feature Sparsity:** The model relies entirely on internal behavioral signals and static keyword dimensions. It lacks external off-page features (e.g., competitor backlink velocity), making it blind to sudden exogenous shocks.
 * **Short-Term Volatility:** The 30-day feature window makes the model highly reactive to short-term noise.
 * **Imbalanced Shift Bias:** The model appears to have learned patterns from earlier periods that did not fully generalize to the later evaluation window. Rolling retraining may help mitigate temporal drift in a production setting.

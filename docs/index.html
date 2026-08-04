@@ -7,6 +7,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -134,7 +151,7 @@
         }
 
         .hero h1 {
-            font-size: 1.85rem; /* Reduced size */
+            font-size: 1.85rem;
             margin-top: 0;
             margin-bottom: 1.5rem;
             font-weight: 700;
@@ -254,7 +271,7 @@
             max-width: 100%;
             height: auto;
             border-radius: 6px;
-            background-color: #ffffff; /* White background for charts */
+            background-color: #ffffff;
             padding: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
             display: block;
@@ -262,7 +279,6 @@
             border: 1px solid var(--border-color);
         }
         
-        /* Image alt text used as caption if necessary */
         img + em {
             display: block;
             text-align: center;
@@ -272,16 +288,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Math Equations */
-        .math {
-            display: block;
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            margin: 1.5rem 0;
-            padding: 1rem;
-            color: var(--text-primary);
-        }
-        
         /* Footer */
         footer {
             margin-top: 5rem;
@@ -301,6 +307,13 @@
         
         footer a:hover {
             color: var(--accent);
+        }
+        
+        /* Math display block adjustments */
+        .MathJax_Display {
+            margin: 2em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
     </style>
 </head>
@@ -322,39 +335,52 @@
 <h2 id="3-problem-statement">3. Problem Statement</h2>
 <p>The primary objective is to classify a web page's future 30-day traffic trajectory into three mutually exclusive categories: <strong>Growing</strong>, <strong>Stable</strong>, or <strong>Declining</strong>. The system must operate without looking ahead (preventing temporal leakage), must outperform standard manual heuristics, and must translate raw predictions into actionable SEO interventions.</p>
 <h2 id="4-dataset">4. Dataset</h2>
-<p>We utilized the public <code>FlyRank/internship-warehouse</code> dataset, which contains high-resolution daily performance records (Google Search Console, Google Analytics 4) and static content dimensions for thousands of URLs structured in a five-table star schema. 
-* <strong>Data Scale:</strong> The raw dataset contains 78.8 million fact rows and a total of ~93.4 million warehouse rows.
-* <strong>Qualified Instances:</strong> After rigorously applying an activity filter (requiring $\ge 10$ impressions in the feature window) and ensuring valid join integrity, we extracted a clean modeling dataset of <strong>548,528 valid instances</strong>.</p>
+<p>We utilized the public <code>FlyRank/internship-warehouse</code> dataset, which contains high-resolution daily performance records (Google Search Console, Google Analytics 4) and static content dimensions for thousands of URLs structured in a five-table star schema. </p>
+<ul>
+<li><strong>Data Scale:</strong> The raw dataset contains 78.8 million fact rows and a total of ~93.4 million warehouse rows.</li>
+<li><strong>Qualified Instances:</strong> After rigorously applying an activity filter (requiring $\ge 10$ impressions in the feature window) and ensuring valid join integrity, we extracted a clean modeling dataset of <strong>548,528 valid instances</strong>.</li>
+</ul>
 <h2 id="5-methodology">5. Methodology</h2>
-<p>To prevent look-ahead bias, we established strict, rolling observation windows:
-* <strong>Feature Window ($T_{feat}$):</strong> 30 days of historical data used to engineer predictive features.
-* <strong>Prediction Window ($T_{pred}$):</strong> The subsequent 30 days used exclusively to compute the target label.
-This structural isolation guarantees that no future information leaks into the training matrix.</p>
+<p>To prevent look-ahead bias, we established strict, rolling observation windows:</p>
+<ul>
+<li><strong>Feature Window ($T_{feat}$):</strong> 30 days of historical data used to engineer predictive features.</li>
+<li><strong>Prediction Window ($T_{pred}$):</strong> The subsequent 30 days used exclusively to compute the target label.
+This structural isolation guarantees that no future information leaks into the training matrix.</li>
+</ul>
 <h2 id="6-feature-engineering">6. Feature Engineering</h2>
-<p>We engineered a matrix of 17 leakage-free features per instance, categorized as follows:
-* <strong>Traffic Aggregates:</strong> Total impressions, clicks, average position, and zero-impression days over $T_{feat}$.
-* <strong>Derived Engagement:</strong> GA4 sessions, pageviews, and Click-Through Rate (CTR).
-* <strong>Momentum Ratios:</strong> Growth velocity comparing the second half of the feature window against the first half (<code>imp_momentum</code>, <code>clicks_momentum</code>).
-* <strong>Content Dimensions:</strong> Time-invariant properties (search volume, keyword intent, content type) and dynamically calculated <code>content_age_days</code>.</p>
+<p>We engineered a matrix of 17 leakage-free features per instance, categorized as follows:</p>
+<ul>
+<li><strong>Traffic Aggregates:</strong> Total impressions, clicks, average position, and zero-impression days over $T_{feat}$.</li>
+<li><strong>Derived Engagement:</strong> GA4 sessions, pageviews, and Click-Through Rate (CTR).</li>
+<li><strong>Momentum Ratios:</strong> Growth velocity comparing the second half of the feature window against the first half (<code>imp_momentum</code>, <code>clicks_momentum</code>).</li>
+<li><strong>Content Dimensions:</strong> Time-invariant properties (search volume, keyword intent, content type) and dynamically calculated <code>content_age_days</code>.</li>
+</ul>
 <p>Every feature was verified to use only information available inside the feature window.</p>
 <h2 id="7-label-definition">7. Label Definition</h2>
 <p>The target variable is a multiclass label defined by the relative percentage change in impressions between the Prediction Window and the Feature Window:
-$$\Delta\% = \frac{\text{Impressions}<em>{pred} - \text{Impressions}</em>{feat}}{\text{Impressions}_{feat}}$$
-* <strong>Growing:</strong> $\Delta\% &gt; +20\%$
-* <strong>Stable:</strong> $-20\% \le \Delta\% \le +20\%$
-* <strong>Declining:</strong> $\Delta\% &lt; -20\%$</p>
+<script type="math/tex; mode=display">\Delta\% = \frac{\text{Impressions}_{pred} - \text{Impressions}_{feat}}{\text{Impressions}_{feat}}</script>
+</p>
+<ul>
+<li><strong>Growing:</strong> $\Delta\% &gt; +20\%$</li>
+<li><strong>Stable:</strong> $-20\% \le \Delta\% \le +20\%$</li>
+<li><strong>Declining:</strong> $\Delta\% &lt; -20\%$</li>
+</ul>
 <p><img alt="Training Label Distribution (Feb &amp; Mar 2026)" src="assets/label_distribution.png" /></p>
 <p>The feature window required $\ge 10$ impressions to ensure the percentage change denominator is not near zero and that the observed traffic changes are statistically meaningful.</p>
 <h2 id="8-validation-strategy">8. Validation Strategy</h2>
-<p>We implemented a strict out-of-time (OOT) validation strategy to simulate a real-world production environment and prevent temporal data leakage:
-* <strong>Train:</strong> <code>train_1</code> (Feb 2026 Cutoff) + <code>train_2</code> (Mar 2026 Cutoff) — 228,905 instances
-* <strong>Validation:</strong> <code>val</code> (Apr 2026 Cutoff) — 151,248 instances
-* <strong>Test (OOT):</strong> <code>test</code> (May 2026 Cutoff) — 168,375 instances</p>
+<p>We implemented a strict out-of-time (OOT) validation strategy to simulate a real-world production environment and prevent temporal data leakage:</p>
+<ul>
+<li><strong>Train:</strong> <code>train_1</code> (Feb 2026 Cutoff) + <code>train_2</code> (Mar 2026 Cutoff) — 228,905 instances</li>
+<li><strong>Validation:</strong> <code>val</code> (Apr 2026 Cutoff) — 151,248 instances</li>
+<li><strong>Test (OOT):</strong> <code>test</code> (May 2026 Cutoff) — 168,375 instances</li>
+</ul>
 <p>The primary evaluation metric selected was <strong>Macro F1-Score</strong> to account for significant class imbalance observed across the temporal splits.</p>
 <h2 id="9-baseline">9. Baseline</h2>
-<p>We established two naive baselines:
-1. <strong>Majority Class Predictor:</strong> Predicting the most frequent class in the training set ("growing"). Test Set Macro F1: 0.1236.
-2. <strong>Momentum Heuristic:</strong> A rule-based approach predicting that the traffic direction observed in the final 15 days of the feature window will continue into the prediction window. Test Set Macro F1: 0.4399.</p>
+<p>We established two naive baselines:</p>
+<ol>
+<li><strong>Majority Class Predictor:</strong> Predicting the most frequent class in the training set ("growing"). Test Set Macro F1: 0.1236.</li>
+<li><strong>Momentum Heuristic:</strong> A rule-based approach predicting that the traffic direction observed in the final 15 days of the feature window will continue into the prediction window. Test Set Macro F1: 0.4399.</li>
+</ol>
 <h2 id="10-modeling-results">10. Modeling Results</h2>
 <p>Two candidate models (RandomForest, XGBoost) were trained on the identical feature matrix and evaluated against the baselines on the May 2026 Test Set.</p>
 <table>
@@ -393,10 +419,12 @@ $$\Delta\% = \frac{\text{Impressions}<em>{pred} - \text{Impressions}</em>{feat}}
 <p><img alt="Confusion Matrix: Champion Random Forest (Test Set)" src="assets/confusion_matrix.png" /></p>
 <h2 id="11-explainability-shap">11. Explainability (SHAP)</h2>
 <p>To interpret the trained model's predictions, SHAP (SHapley Additive exPlanations) was applied to the Champion Random Forest model.</p>
-<p>The SHAP analysis indicates that the trained model primarily relies on three core factors:
-1. <strong>Recent Momentum (<code>imp_momentum</code>)</strong>
-2. <strong>Historical Volume (<code>feat_impressions</code>)</strong>
-3. <strong>Content Age (<code>content_age_days</code>)</strong></p>
+<p>The SHAP analysis indicates that the trained model primarily relies on three core factors:</p>
+<ol>
+<li><strong>Recent Momentum (<code>imp_momentum</code>)</strong></li>
+<li><strong>Historical Volume (<code>feat_impressions</code>)</strong></li>
+<li><strong>Content Age (<code>content_age_days</code>)</strong></li>
+</ol>
 <p><img alt="SHAP Global Feature Importance" src="assets/shap_global_importance.png" /></p>
 <p><img alt="SHAP Summary for Declining Predictions" src="assets/shap_declining.png" /></p>
 <p>These learned patterns are broadly consistent with common SEO intuition: older content generally contributed toward declining predictions, whereas newer content with explosive recent momentum contributed toward growing predictions.</p>
@@ -458,15 +486,19 @@ content_6486239516a186d7        declining                0.478496           9985
 content_bdf60c86117079be        declining                0.591222           95403.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
 </code></pre>
 <h2 id="14-failure-analysis">14. Failure Analysis</h2>
-<p>An extensive error analysis on the test set (Overall Error Rate: 47.8%) revealed three primary failure profiles:
-1. <strong>The "False Growth" Trap:</strong> Transient traffic spikes in the feature window cause the model to over-predict sustained growth, failing to anticipate rapid regression to the mean.
-2. <strong>The "Stability" Illusion:</strong> The inherent daily volatility of short-term search performance fluctuations makes the $\pm 20\%$ stability band notoriously difficult to hit; the model tends to over-predict directional movement (Growth/Decline) instead.
-3. <strong>Macro-Level Distribution Shift:</strong> The model was trained on earlier temporal windows with a higher proportion of growing pages and evaluated on a later out-of-time window with substantially more declining pages.</p>
+<p>An extensive error analysis on the test set (Overall Error Rate: 47.8%) revealed three primary failure profiles:</p>
+<ol>
+<li><strong>The "False Growth" Trap:</strong> Transient traffic spikes in the feature window cause the model to over-predict sustained growth, failing to anticipate rapid regression to the mean.</li>
+<li><strong>The "Stability" Illusion:</strong> The inherent daily volatility of short-term search performance fluctuations makes the $\pm 20\%$ stability band notoriously difficult to hit; the model tends to over-predict directional movement (Growth/Decline) instead.</li>
+<li><strong>Macro-Level Distribution Shift:</strong> The model was trained on earlier temporal windows with a higher proportion of growing pages and evaluated on a later out-of-time window with substantially more declining pages.</li>
+</ol>
 <h2 id="15-limitations">15. Limitations</h2>
-<p>When evaluating this system for production, the following limitations must be explicitly acknowledged:
-* <strong>Feature Sparsity:</strong> The model relies entirely on internal behavioral signals and static keyword dimensions. It lacks external off-page features (e.g., competitor backlink velocity), making it blind to sudden exogenous shocks.
-* <strong>Short-Term Volatility:</strong> The 30-day feature window makes the model highly reactive to short-term noise.
-* <strong>Imbalanced Shift Bias:</strong> The model appears to have learned patterns from earlier periods that did not fully generalize to the later evaluation window. Rolling retraining may help mitigate temporal drift in a production setting.</p>
+<p>When evaluating this system for production, the following limitations must be explicitly acknowledged:</p>
+<ul>
+<li><strong>Feature Sparsity:</strong> The model relies entirely on internal behavioral signals and static keyword dimensions. It lacks external off-page features (e.g., competitor backlink velocity), making it blind to sudden exogenous shocks.</li>
+<li><strong>Short-Term Volatility:</strong> The 30-day feature window makes the model highly reactive to short-term noise.</li>
+<li><strong>Imbalanced Shift Bias:</strong> The model appears to have learned patterns from earlier periods that did not fully generalize to the later evaluation window. Rolling retraining may help mitigate temporal drift in a production setting.</li>
+</ul>
 <h2 id="16-reproducibility">16. Reproducibility</h2>
 <p>All data cleaning, feature engineering, modeling, and evaluation scripts have been committed to a central repository. The preprocessing pipeline is deterministic through fixed temporal splits and fixed random seeds.</p>
 <h2 id="17-acknowledgments">17. Acknowledgments</h2>
@@ -482,36 +514,6 @@ content_bdf60c86117079be        declining                0.591222           9540
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Format Math formulas
-            const ps = document.querySelectorAll('.main-content p');
-            ps.forEach(p => {
-                if (p.textContent.trim().startsWith('$$') && p.textContent.trim().endsWith('$$')) {
-                    p.classList.add('math');
-                    p.innerHTML = p.innerHTML.replace(/\$\$/g, '');
-                } else if (p.textContent.includes('$\le$')) {
-                    p.innerHTML = p.innerHTML.replace(/\$\le\$/g, '≤');
-                } else if (p.textContent.includes('$\ge$')) {
-                    p.innerHTML = p.innerHTML.replace(/\$\ge\$/g, '≥');
-                }
-            });
-            
-            const tds = document.querySelectorAll('td');
-            tds.forEach(td => {
-                if (td.innerHTML.includes('$\le$')) {
-                    td.innerHTML = td.innerHTML.replace(/\$\le\$/g, '≤');
-                }
-                if (td.innerHTML.includes('$\ge$')) {
-                    td.innerHTML = td.innerHTML.replace(/\$\ge\$/g, '≥');
-                }
-            });
-            
-            const lis = document.querySelectorAll('li');
-            lis.forEach(li => {
-                if (li.innerHTML.includes('$\ge$')) {
-                    li.innerHTML = li.innerHTML.replace(/\$\ge\$/g, '≥');
-                }
-            });
-
             // Build TOC
             const headings = document.querySelectorAll('.main-content h2');
             const toc = document.getElementById('toc');
