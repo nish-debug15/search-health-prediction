@@ -30,7 +30,7 @@ hero_html = """
     
     <div class="author-block">
         <div class="author-name">Nishit Patel</div>
-        <div class="author-details">Machine Learning Capstone<br>FlyRank ML Internship &bull; August 2026</div>
+        <div class="author-details">FlyRank ML Internship &bull; August 2026</div>
     </div>
 </header>
 """
@@ -193,14 +193,14 @@ html_template = f"""<!DOCTYPE html>
 
         /* Hero Section */
         .hero {{
-            margin-bottom: 4rem;
-            padding-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
         }}
 
         .hero h1 {{
             font-size: 2.4rem;
             margin-top: 0;
-            margin-bottom: 2rem;
+            margin-bottom: 1.25rem;
             font-weight: 500;
             letter-spacing: -0.02em;
             line-height: 1.25;
@@ -210,7 +210,7 @@ html_template = f"""<!DOCTYPE html>
 
         .author-block {{
             margin-bottom: 0;
-            margin-top: 2rem;
+            margin-top: 0;
         }}
         
         .author-name {{
