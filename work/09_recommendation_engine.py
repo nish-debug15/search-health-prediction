@@ -43,7 +43,7 @@ y_pred_proba = rf.predict_proba(X_score_imp)
 
 rev_map = {0: 'declining', 1: 'growing', 2: 'stable'}
 base_data['predicted_status'] = pd.Series(y_pred_encoded).map(rev_map).values
-base_data['confidence'] = y_pred_proba.max(axis=1)
+base_data['prediction_probability'] = y_pred_proba.max(axis=1)
 
 print("3. Generating Recommendations & Reason Codes...")
 def generate_action(row):
@@ -78,7 +78,7 @@ print("\n4. Extracting Top 10 High-Priority Actions (Sorted by Traffic Volume)..
 actionable = base_data[base_data['action'].isin(['Refresh', 'Investigate', 'Prune/Consolidate'])].copy()
 top_10 = actionable.sort_values(by='feat_impressions', ascending=False).head(10)
 
-top_10_print = top_10[['content_hash_id', 'predicted_status', 'confidence', 'feat_impressions', 'action', 'reason_code']]
+top_10_print = top_10[['content_hash_id', 'predicted_status', 'prediction_probability', 'feat_impressions', 'action', 'reason_code']]
 print("\n--- Top 10 Recommended Actions ---")
 print(top_10_print.to_string(index=False))
 
@@ -89,20 +89,31 @@ md_content = f"""# Block 9: Ranking & Recommendation Engine
 ## 1. Engine Overview
 We deployed the Champion Random Forest model to score the most recent dataset snapshot (the out-of-time Test set from May 2026, comprising 168,375 active pages). 
 
-Using the model's predictions (`growing`, `stable`, `declining`) in conjunction with business context features (traffic volume, content age), we deterministically mapped every page to an **SEO Action** and attached a human-readable **Reason Code**.
+Using the model's highest predicted class probability (`prediction_probability`) in conjunction with business context features (traffic volume, content age), we deterministically mapped every page to an **SEO Action** and attached a human-readable **Reason Code**. 
 
-## 2. Action Distribution
+> [!NOTE]
+> Recommendations are based strictly on the predicted class plus business rules—not on a calibrated probability threshold. A probability of 0.38 may trigger an action if that was the model's highest output class.
+
+## 2. Recommendation Logic
+
+The paper's methodology utilizes the following explicit recommendation rules to map predictions and context to actions:
+
+| Predicted Status | Business Context | Action |
+| :--- | :--- | :--- |
+| Growing | Any | **Protect** |
+| Stable | High Traffic (`feat_impressions` > 1000) | **Maintain** |
+| Stable | Low Traffic (`feat_impressions` $\le$ 1000) | **Optimize** |
+| Declining | Old Content (`content_age_days` > 365) | **Refresh** |
+| Declining | Recent High-Value Content (`feat_impressions` $\ge$ 100) | **Investigate** |
+| Declining | Low-Value Content (`feat_impressions` < 100) | **Prune / Consolidate** |
+
+## 3. Action Distribution
 
 ```text
 {action_dist.to_string()}
 ```
 
-* **Refresh**: The largest intervention category, primarily driven by older pages ( > 365 days) that the model confidently predicts will decline in the next 30 days.
-* **Protect / Maintain**: Assets requiring no immediate intervention.
-* **Investigate**: A critical alert for *recent* high-value content that the model flags for imminent decline (often indicating technical issues or cannibalization).
-* **Prune/Consolidate**: Low-value, declining pages recommended for cleanup to preserve crawl budget.
-
-## 3. Top 10 High-Priority Actions (Prioritized by Baseline Traffic)
+## 4. Top 10 High-Priority Actions (Prioritized by Baseline Traffic)
 
 Below are the top 10 most critical pages requiring immediate intervention, sorted by their recent impression volume.
 
@@ -110,8 +121,8 @@ Below are the top 10 most critical pages requiring immediate intervention, sorte
 {top_10_print.to_string(index=False)}
 ```
 
-## 4. Output Generation
-The full scoring matrix (containing the predictions, confidences, actions, and reason codes for all 168,375 pages) has been successfully generated and is ready for export to the client's reporting dashboard.
+## 5. Output Generation
+The full scoring matrix (containing the predictions, probabilities, actions, and reason codes for all 168,375 pages) has been successfully generated and is ready for export to the client's reporting dashboard.
 """
 
 Path("work/09_recommendations.md").write_text(md_content, encoding="utf-8")
