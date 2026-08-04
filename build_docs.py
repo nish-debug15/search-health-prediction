@@ -34,8 +34,8 @@ hero_html = """
     </div>
 </header>
 """
-# Replace the first <h1> block
-html_content = re.sub(r'<h1>.*?</h1>', hero_html, html_content, count=1, flags=re.DOTALL)
+# Replace the first <h1> block (which may have an id attribute due to toc extension)
+html_content = re.sub(r'<h1.*?>.*?</h1>', hero_html, html_content, count=1, flags=re.DOTALL)
 
 # HTML Template
 html_template = f"""<!DOCTYPE html>
