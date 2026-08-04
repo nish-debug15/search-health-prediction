@@ -27,8 +27,8 @@ A deep dive into the misclassifications reveals specific operational blind spots
 * **Mechanism:** Predicting stability ($\pm 20\%$ variance) is notoriously difficult in SEO due to the natural daily volatility of SERP features and crawl rates. The model is highly sensitive and tends to "pick a direction" (over-predicting decline 9,396 times and growth 6,268 times) rather than predicting the neutral stable class.
 
 ### Failure Mode C: Macro-Level Distribution Shift
-* **Mechanism:** The model was trained on Feb/Mar data (where platform-wide growth was ~45%). It was evaluated on May data (where platform-wide growth crashed to ~22% and decline spiked to ~57%). 
-* **Impact:** The model learned an inherently more optimistic world. Despite performing well, its prior biases led to under-predicting the severity of the May visibility decay.
+* **Mechanism:** The model was trained on earlier temporal windows (Feb/Mar data, where platform-wide growth was ~45%). It was evaluated on a later out-of-time window (May data, where platform-wide growth crashed to ~22% and decline spiked to ~57%). 
+* **Impact:** The model appears to have learned patterns from earlier periods that did not fully generalize to the later evaluation window, leading to under-predicting the severity of the May visibility decay.
 
 ## 4. Limitations Section
 
@@ -36,4 +36,4 @@ When presenting this model in production or academic literature, the following l
 
 1. **Feature Sparsity (Missing Competitor Data):** The model lacks external off-page features (e.g., competitor backlink velocity, algorithmic update rollouts). It relies entirely on internal behavioral signals and static keyword dimensions, making it blind to sudden exogenous shocks.
 2. **Short-Term Volatility:** The 30-day feature window makes the model highly reactive to short-term spikes (Failure Mode A). Smoothing features over a 90-day window could improve robustness at the cost of latency.
-3. **Imbalanced Shift Bias:** The dataset exhibits extreme temporal distribution shift. A model trained on a period of algorithmic expansion will systematically over-predict growth during a period of algorithmic contraction. Continuous, rolling retraining is required in production to mitigate this drift.
+3. **Imbalanced Shift Bias:** The dataset exhibits extreme temporal distribution shift. A model trained on an earlier observation period with a higher proportion of growing pages will systematically over-predict growth when evaluated on a later observation period with substantially more declining pages. Continuous, rolling retraining is required in production to mitigate this drift.
