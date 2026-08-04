@@ -32,4 +32,4 @@ The bar chart illustrates the mean absolute SHAP value for each feature across t
 * **High `content_age_days`** (older content) acts as a strong decay indicator, pushing predictions toward decline.
 
 ## 4. Conclusion
-The model heavily utilizes recent momentum, baseline traffic volume, and content age to make its predictions. This aligns seamlessly with SEO domain knowledge: older content with fading momentum is highly likely to decay, whereas newer content with explosive recent momentum is likely to grow.
+The SHAP analysis indicates that the trained model primarily relies on recent momentum, historical traffic volume, and content age when making predictions. These learned patterns are broadly consistent with common SEO intuition. Older content with fading momentum is highly likely to decay, whereas newer content with explosive recent momentum is likely to grow.
