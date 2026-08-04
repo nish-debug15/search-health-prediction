@@ -1,5 +1,9 @@
 # Predictive Modeling of Search Engine Visibility Decay: A Machine Learning Approach for Proactive SEO
 
+**Nishit Patel**  
+*Machine Learning Capstone*  
+*FlyRank ML Internship • August 2026*
+
 A machine learning capstone project exploring whether historical search signals can predict the future health of web pages and generate ranked, actionable recommendations.
 
 **Status:** Completed ✅  
