@@ -338,6 +338,13 @@ html_template = f"""<!DOCTYPE html>
             margin-bottom: 2rem;
         }}
 
+        /* Math display block adjustments */
+        .MathJax_Display {{
+            margin: 2em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }}
+
         /* Footer */
         footer {{
             margin-top: 5rem;
@@ -346,24 +353,36 @@ html_template = f"""<!DOCTYPE html>
             font-size: 0.85rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }}
-        
-        footer a {{
+            gap: 1rem;
             color: var(--text-secondary);
         }}
-        
-        footer a:hover {{
+
+        .footer-left {{
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }}
+
+        .footer-right a {{
             color: var(--accent);
+            text-decoration: none;
         }}
         
-        /* Math display block adjustments */
-        .MathJax_Display {{
-            margin: 2em 0 !important;
-            overflow-x: auto;
-            overflow-y: hidden;
+        .footer-left a {{
+            color: var(--text-secondary);
+            text-decoration: underline;
+        }}
+
+        .footer-left a:hover, .footer-right a:hover {{
+            text-decoration: none;
+        }}
+
+        @media (min-width: 600px) {{
+            footer {{
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }}
         }}
     </style>
 </head>
@@ -380,9 +399,13 @@ html_template = f"""<!DOCTYPE html>
             {html_content}
 
             <footer>
-                <div>Built and authored by Nishit Patel</div>
-                <div>Built on the <a href="https://flyrank.ai" target="_blank">FlyRank ML Internship Dataset</a></div>
-                <div><a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub Repository</a></div>
+                <div class="footer-left">
+                    <div>Built and authored by Nishit Patel</div>
+                    <div>Built on the <a href="https://flyrank.ai" target="_blank">FlyRank ML Internship Dataset</a></div>
+                </div>
+                <div class="footer-right">
+                    <a href="https://github.com/nish-debug15/search-health-prediction" target="_blank">GitHub Repository</a>
+                </div>
             </footer>
         </main>
     </div>
@@ -450,4 +473,4 @@ os.makedirs('docs', exist_ok=True)
 with open('docs/index.html', 'w', encoding='utf-8') as f:
     f.write(html_template)
 
-print("Generated professional academic docs/index.html with MathJax")
+print("Generated professional academic docs/index.html with fixed footer")
