@@ -64,7 +64,7 @@ def generate_action(row):
         elif imp < 100:
             return 'Prune/Consolidate', 'Declining traffic on new/low-volume content; consider merging or removing.'
         else:
-            return 'Investigate', 'Declining traffic on recent high-value content; check for technical issues or SERP feature loss.'
+            return 'Investigate', 'Declining traffic on recent high-value content; Review recent search performance trends and investigate potential causes of the observed decline.'
     
     return 'Review', 'Manual review required.'
 

@@ -82,7 +82,7 @@ To translate probabilistic predictions into actionable business strategy, we dep
 | Stable | High Traffic (`feat_impressions` > 1000) | **Maintain** |
 | Stable | Low Traffic (`feat_impressions` $\le 1000$) | **Optimize** |
 | Declining | Old Content (`content_age_days` > 365) | **Refresh** |
-| Declining | Recent High-Value Content (`feat_impressions` $\ge 100$) | **Investigate** |
+| Declining | Recent High-Value Content (`feat_impressions` $\ge 100$) | **Investigate** (Review recent search performance trends and investigate potential causes of the observed decline.) |
 | Declining | Low-Value Content (`feat_impressions` < 100) | **Prune / Consolidate** |
 
 ## 13. Ranked Recommendations
@@ -90,16 +90,16 @@ By running the recommendation engine across the out-of-time test set, we generat
 
 ```text
          content_hash_id predicted_status  prediction_probability  feat_impressions      action                                                                                      reason_code
-content_62770e1299963fe4        declining                0.485402          180151.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_661a7734f691bef5        declining                0.453426          169494.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_99fc6465edb0e52c        declining                0.614921          151230.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
+content_62770e1299963fe4        declining                0.485402          180151.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_661a7734f691bef5        declining                0.453426          169494.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_99fc6465edb0e52c        declining                0.614921          151230.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
 content_963de14b1f58978f        declining                0.609215          142085.0     Refresh                                     Declining traffic on older content; needs a content refresh.
-content_14df7b049d1d6467        declining                0.442516          119743.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_468d0aa0891d425d        declining                0.455516          114071.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_f33ad8a343180e8b        declining                0.387023          107944.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_b88025fbf2493889        declining                0.440025          103586.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_6486239516a186d7        declining                0.478496           99857.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
-content_bdf60c86117079be        declining                0.591222           95403.0 Investigate Declining traffic on recent high-value content; check for technical issues or SERP feature loss.
+content_14df7b049d1d6467        declining                0.442516          119743.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_468d0aa0891d425d        declining                0.455516          114071.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_f33ad8a343180e8b        declining                0.387023          107944.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_b88025fbf2493889        declining                0.440025          103586.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_6486239516a186d7        declining                0.478496           99857.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
+content_bdf60c86117079be        declining                0.591222           95403.0 Investigate Review recent search performance trends and investigate potential causes of the observed decline.
 ```
 
 ## 14. Failure Analysis
@@ -118,4 +118,4 @@ When evaluating this system for production, the following limitations must be ex
 All data cleaning, feature engineering, modeling, and evaluation scripts have been committed to a central repository. The preprocessing pipeline is deterministic through fixed temporal splits and fixed random seeds.
 
 ## 17. Acknowledgments
-Built on the FlyRank ML Internship dataset provided by FlyRank. https://flyrank.ai
+Built on the FlyRank ML Internship dataset provided by FlyRank. This work uses the FlyRank internship warehouse dataset for educational and research purposes. More information: https://flyrank.ai
